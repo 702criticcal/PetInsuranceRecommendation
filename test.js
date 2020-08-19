@@ -1,37 +1,43 @@
 // 품종 = {
-//     '토이 푸들': 1,
-//     '시바 이누': 2,
-//     '포메라니안': 3,
-//     '치와와': 4,
-//     '말티즈': 5
+//     // 세계애견연맹 5 그룹. 뾰족한 주둥이와 선 귀를 가진 종 그룹.
+//     '진돗개' : 50.0,
+//     '포메라니안' : 50.1,
+//     '시베리안 허스키' : 50.2,
+//     // 세계애견연맹 6 그룹. 수렵견 그룹.
+//     '비글' : 60.0,
+//     '달마시안' : 60.1,
+//     '바셋 하운드' : 60.2,
+//     // 세계애견연맹 9 그룹. 가정견 그룹.
+//     '몰티즈': 90.0,
+//     '시추': 90.1,
+//     '토이 푸들': 90.2,
+//     '치와와': 90.3,
+//     '빠삐용': 90.4
 // }
 
 // 강아지/고양이 = {
 //     강아지 : 1,
-//     고양이 : 2
+//     고양이 : 100
 // }
 
 // 성별 = {
 //     암 : 1,
-//     수 : 2
+//     수 : 100
 // }
 
 // 동물 등록 여부 = {
 //     유 : 1,
-//     무 : 2
+//     무 : 100
 // }
 
 // 중성화 여부 = {
 //     유 : 1,
-//     무 : 2
+//     무 : 100
 // }
 
-
-
-// 마이 페이지에서 입력받는 값 가져오는 걸로 수정하면 됨.
-var yyyyMMdd = '2019/02/02'
+var yyyyMMdd = '2019/02/02' // 마이 페이지에서 입력받는 값 가져오는 걸로 수정하면 됨.
 function getAgeFromBirthDay(birth_day) {
-    var birthday = new Date(yyyyMMdd);
+    var birthday = new Date(birth_day);
     var today = new Date();
     var age = today.getFullYear() - birthday.getFullYear();
     // if (age < 1) {
@@ -40,47 +46,55 @@ function getAgeFromBirthDay(birth_day) {
     // }
     return age
 }
-getAgeFromBirthDay(yyyyMMdd);
-
+// console.log('강아지 나이 : ', getAgeFromBirthDay('2017/03/04'));
 
 // set a dataset
-var dataset = {
+// 마이 페이지에서 입력받는 값 가져오는 걸로 수정하면 됨.
+var basicDataSet = {
     '신준수': {
         '강아지/고양이' : 1,
-        '품종': 5,
-        '나이': getAgeFromBirthDay(yyyyMMdd),
+        '품종': 90.0,
+        '나이': (getAgeFromBirthDay(yyyyMMdd) / 10),
         '성별': 1,
-        '동물 등록 여부': 2,
-        '중성화 여부': 1,
+        '동물 등록 여부': 1,
+        '중성화 여부': 100
     },
-    'Claudia Puig': {
-        'Snakes on a Plane': 3.5,
-        'Just My Luck': 3.0,
-        'The Night Listener': 4.5,
-        'Superman Returns': 4.0,
-        'You, Me and Dupree': 2.5
+    '김철수': {
+        '강아지/고양이' : 1,
+        '품종': 90.1,
+        '나이': (getAgeFromBirthDay('2015/03/04') / 10),
+        '성별': 1
     },
-    'Mick LaSalle': {
-        'Lady in the Water': 3.0,
-        'Snakes on a Plane': 4.0,
-        'Just My Luck': 2.0,
-        'Superman Returns': 3.0,
-        'The Night Listener': 3.0,
-        'You, Me and Dupree': 2.0
+    '김미영': {
+        '강아지/고양이' : 100,
+        '품종': 110.0,
+        '나이': (getAgeFromBirthDay('2018/03/04') / 10),
+        '성별': 1,
+        '동물 등록 여부': 1,
+        '중성화 여부': 100,
     },
     '홍길동': {
         '강아지/고양이' : 1,
-        '품종': 5,
-        '나이': getAgeFromBirthDay('2019/03/04'),
-        '성별': 1,
-        '동물 등록 여부': 2,
+        '품종': 60.0,
+        '나이': (getAgeFromBirthDay('2018/03/04') / 10),
+        '성별': 100,
+        '동물 등록 여부': 100,
         '중성화 여부': 1,
     },
-    'Toby': {
-        'Snakes on a Plane': 4.5,
-        'You, Me and Dupree': 1.0,
-        'Superman Returns': 4.0
+    '김밥': {
+        '강아지/고양이' : 1,
+        '품종': 90.0,
+        '나이': (getAgeFromBirthDay('2017/03/04') / 10),
+        '성별': 100
     }
+};
+
+var insuranceDataSet = {
+    '신준수': {'가입 중인 보험' : '삼성화재 애니펫'},
+    '김철수': {'가입 중인 보험' : 'KB손해보험 KB펫코노미'},
+    '김미영': {'가입 중인 보험' : 'DB손해보험 아이러브펫보험'},
+    '홍길동': {'가입 중인 보험' : 'DB손해보험 프로미 반려동물 보험'},
+    '김밥밥': {'가입 중인 보험' : '삼성화재 애니펫'},
 };
 
 var euclid = Math.sqrt(Math.pow(3.5 - 2.5, 2) + Math.pow(4.0 - 3.5, 2));
@@ -123,7 +137,7 @@ var len = function (obj) {
     return len;
 }
 
-console.log(euclidean_score(dataset,"신준수","홍길동"));
+console.log('유클리드 거리 : ', euclidean_score(basicDataSet,"신준수","김철수"));
 
 var pearson_correlation = function (dataset, p1, p2) {
     var existp1p2 = {};
@@ -162,7 +176,7 @@ var pearson_correlation = function (dataset, p1, p2) {
 
 }
 
-console.log(pearson_correlation(dataset, '신준수', '홍길동'))
+console.log('피어슨 상관 관계 점수 : ', pearson_correlation(basicDataSet, '신준수', '김철수'))
 
 var similar_user = function (dataset, person, num_user, distance) {
     var scores = [];
@@ -183,7 +197,7 @@ var similar_user = function (dataset, person, num_user, distance) {
     return score;
 }
 
-console.log('유사한 사용자 : ', similar_user(dataset, '신준수', 3, pearson_correlation));
+console.log('유사한 사용자 : ', similar_user(basicDataSet, '신준수', 3, pearson_correlation));
 
 var recommendation_eng = function (dataset, person, distance) {
 
@@ -240,4 +254,4 @@ var recommendation_eng = function (dataset, person, distance) {
     // return recommend;
 }
 
-console.log(recommendation_eng(dataset, '신준수', pearson_correlation))
+console.log(recommendation_eng(basicDataSet, '신준수', pearson_correlation))
