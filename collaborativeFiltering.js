@@ -1,108 +1,5 @@
-// 품종 = {
-//     // 세계애견연맹 5 그룹. 뾰족한 주둥이와 선 귀를 가진 종 그룹.
-//     '진돗개' : 50.0,
-//     '포메라니안' : 51.0,
-//     '시베리안 허스키' : 51.0,
-//     // 세계애견연맹 6 그룹. 수렵견 그룹.
-//     '비글' : 60.0,
-//     '달마시안' : 61.0,
-//     '바셋 하운드' : 62.0,
-//     // 세계애견연맹 9 그룹. 가정견 그룹.
-//     '몰티즈': 90.0,
-//     '시추': 91.0,
-//     '토이 푸들': 92.0,
-//     '치와와': 93.0,
-//     '빠삐용': 94.0
-// }
-
-// 강아지/고양이 = {
-//     강아지 : 1,
-//     고양이 : 10000000000
-// }
-
-// 성별 = {
-//     암 : 1,
-//     수 : 10000
-// }
-
-// 동물 등록 여부 = {
-//     유 : 1,
-//     무 : 100
-// }
-
-// 중성화 여부 = {
-//     유 : 1,
-//     무 : 100
-// }
-
-var yyyyMMdd = '2019/02/02' // 마이 페이지에서 입력받는 값 가져오는 걸로 수정하면 됨.
-function getAgeFromBirthDay(birth_day) {
-    var birthday = new Date(birth_day);
-    var today = new Date();
-    var age = today.getFullYear() - birthday.getFullYear();
-    // if (age < 1) {
-    //     var age = today.getMonth() - birthday.getMonth();
-    //     console.log('생후 ', age, '개월');
-    // }
-    return age
-}
-// console.log('강아지 나이 : ', getAgeFromBirthDay('2017/03/04'));
-
-// set a dataset
-// 마이 페이지에서 입력받는 값 가져오는 걸로 수정하면 됨.
-var basicDataSet = {
-    '신준수': {
-        '강아지/고양이': 1,
-        '품종': 90.0,
-        '나이': (getAgeFromBirthDay(yyyyMMdd) / 10),
-        '성별': 1,
-        '동물 등록 여부': 1,
-        '중성화 여부': 100
-    },
-    '김철수': {
-        '강아지/고양이': 1,
-        '품종': 91.0,
-        '나이': (getAgeFromBirthDay('2015/03/04') / 10),
-        '성별': 1
-    },
-    '박보검': {
-        '강아지/고양이': 1,
-        '품종': 90.0,
-        '나이': (getAgeFromBirthDay('2017/03/04') / 10),
-        '성별': 1
-    },
-    '김미영': {
-        '강아지/고양이': 10000000000,
-        '품종': 11000000001.0,
-        '나이': (getAgeFromBirthDay('2018/03/04') / 10),
-        '성별': 1,
-        '동물 등록 여부': 1,
-        '중성화 여부': 100,
-    },
-    '홍길동': {
-        '강아지/고양이': 1,
-        '품종': 60.0,
-        '나이': (getAgeFromBirthDay('2018/03/04') / 10),
-        '성별': 10000,
-        '동물 등록 여부': 100,
-        '중성화 여부': 1,
-    },
-    '김밥밥': {
-        '강아지/고양이': 1,
-        '품종': 90.0,
-        '나이': (getAgeFromBirthDay('2017/03/04') / 10),
-        '성별': 10000
-    }
-};
-
-var insuranceDataSet = {
-    '신준수': { insurance: '삼성화재 애니펫' },
-    '김철수': { insurance: '삼성화재 애니펫' },
-    '박보검': { insurance: '삼성화재 애니펫' },
-    '김미영': { insurance: 'DB손해보험 아이러브펫보험' },
-    '홍길동': { insurance: 'DB손해보험 프로미 반려동물 보험' },
-    '김밥밥': { insurance: 'KB손해보험 KB펫코노미' },
-};
+const basicDataSet = require('./basicDataSet');
+const insuranceDataSet = require('./insuranceDataSet');
 
 var euclid = Math.sqrt(Math.pow(3.5 - 2.5, 2) + Math.pow(4.0 - 3.5, 2));
 
@@ -223,11 +120,19 @@ var insuranceRecommendation = function (similar_user_result, insuranceDataSet) {
     for (var insurance in result) {
         sortable.push([insurance, result[insurance]]);
     }
-
-    sortable.sort(function(a,b){
+    sortable.sort(function (a, b) {
         return b[1] - a[1];
     });
-    return sortable[0][0];
+
+    firstRecommendation = sortable[0][0];
+    secondRecommendation = sortable[1][0];
+    return [firstRecommendation, secondRecommendation];
 }
 
-console.log('추천하는 보험 : ', insuranceRecommendation(similar_user(basicDataSet, '신준수', 5, pearson_correlation), insuranceDataSet));
+var recommendationResult = insuranceRecommendation(similar_user(basicDataSet.basicDataSet, '신준수', 5, pearson_correlation),
+    insuranceDataSet.insuranceDataSet);
+
+for (var i in recommendationResult) {
+    console.log('고객님과 유사한 고객님들의 ', recommendationResult.indexOf(recommendationResult[i]) + 1, '순위 보험 선택은 ',
+        recommendationResult[i], '입니다.');
+}
