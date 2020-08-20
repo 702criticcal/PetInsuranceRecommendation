@@ -52,7 +52,7 @@ function getAgeFromBirthDay(birth_day) {
 // 마이 페이지에서 입력받는 값 가져오는 걸로 수정하면 됨.
 var basicDataSet = {
     '신준수': {
-        '강아지/고양이' : 1,
+        '강아지/고양이': 1,
         '품종': 90.0,
         '나이': (getAgeFromBirthDay(yyyyMMdd) / 10),
         '성별': 1,
@@ -60,19 +60,19 @@ var basicDataSet = {
         '중성화 여부': 100
     },
     '김철수': {
-        '강아지/고양이' : 1,
+        '강아지/고양이': 1,
         '품종': 91.0,
         '나이': (getAgeFromBirthDay('2015/03/04') / 10),
         '성별': 1
     },
     '박보검': {
-        '강아지/고양이' : 1,
+        '강아지/고양이': 1,
         '품종': 90.0,
         '나이': (getAgeFromBirthDay('2017/03/04') / 10),
         '성별': 1
     },
     '김미영': {
-        '강아지/고양이' : 10000000000,
+        '강아지/고양이': 10000000000,
         '품종': 11000000001.0,
         '나이': (getAgeFromBirthDay('2018/03/04') / 10),
         '성별': 1,
@@ -80,7 +80,7 @@ var basicDataSet = {
         '중성화 여부': 100,
     },
     '홍길동': {
-        '강아지/고양이' : 1,
+        '강아지/고양이': 1,
         '품종': 60.0,
         '나이': (getAgeFromBirthDay('2018/03/04') / 10),
         '성별': 10000,
@@ -88,7 +88,7 @@ var basicDataSet = {
         '중성화 여부': 1,
     },
     '김밥밥': {
-        '강아지/고양이' : 1,
+        '강아지/고양이': 1,
         '품종': 90.0,
         '나이': (getAgeFromBirthDay('2017/03/04') / 10),
         '성별': 10000
@@ -96,12 +96,12 @@ var basicDataSet = {
 };
 
 var insuranceDataSet = {
-    '신준수': {'가입 중인 보험' : '삼성화재 애니펫'},
-    '김철수': {'가입 중인 보험' : 'KB손해보험 KB펫코노미'},
-    '박보검': {'가입 중인 보험' : '삼성화재 애니펫'},
-    '김미영': {'가입 중인 보험' : 'DB손해보험 아이러브펫보험'},
-    '홍길동': {'가입 중인 보험' : 'DB손해보험 프로미 반려동물 보험'},
-    '김밥밥': {'가입 중인 보험' : '삼성화재 애니펫'},
+    '신준수': { insurance: '삼성화재 애니펫' },
+    '김철수': { insurance: '삼성화재 애니펫' },
+    '박보검': { insurance: '삼성화재 애니펫' },
+    '김미영': { insurance: 'DB손해보험 아이러브펫보험' },
+    '홍길동': { insurance: 'DB손해보험 프로미 반려동물 보험' },
+    '김밥밥': { insurance: 'KB손해보험 KB펫코노미' },
 };
 
 var euclid = Math.sqrt(Math.pow(3.5 - 2.5, 2) + Math.pow(4.0 - 3.5, 2));
@@ -144,7 +144,7 @@ var len = function (obj) {
     return len;
 }
 
-console.log('유클리드 거리 : ', euclidean_score(basicDataSet,"신준수","김철수"));
+console.log('유클리드 거리 : ', euclidean_score(basicDataSet, "신준수", "김철수"));
 
 var pearson_correlation = function (dataset, p1, p2) {
     var existp1p2 = {};
@@ -261,28 +261,48 @@ var recommendation_eng = function (dataset, person, distance) {
     return [rank_lst, recommend];
     // return recommend;
 }
-var seouFunction = function(similar_user_result, insuranceDataSet){
+
+var insuranceRecommendation = function (similar_user_result, insuranceDataSet) {
     result = {};
-    for(var index in similar_user_result){
+    for (var index in similar_user_result) {
         user = similar_user_result[index];
-        console.log(Object.keys(insuranceDataSet));
-        console.log(user["p"]);
-        console.log(user["p"] in Object.keys(insuranceDataSet));
-        if(user["p"] in Object.keys(insuranceDataSet)){
-            console.log("!!");
-            if(insuranceDataSet[user["p"]["가입 중인 보험"]] in Object.keys(result)){
-                result[insuranceDataSet[user["p"]["가입 중인 보험"]]]+=user["val"]
+        console.log(Object.keys(insuranceDataSet)); // [ '신준수', '김철수', '박보검', '김미영', '홍길동', '김밥밥' ]
+        console.log(insuranceDataSet);
+        console.log(user["p"]); // 박보검
+        userInsurance = insuranceDataSet[user["p"]];
+        console.log('가입 중인 보험 : ', userInsurance["insurance"]);
+        // console.log(user["p"] in Object.keys(insuranceDataSet));
+        // console.log('asdasdasd', user["p"] in insuranceDataSet);
+        // console.log(insuranceDataSet[user["p"]["가입 중인 보험"]] in Object.keys(result));
+        // console.log('가입 중인 보험 : ',insuranceDataSet["가입 중인 보험"]);
+        var userIndex = user["p"];
+        if (userIndex in insuranceDataSet) {
+            console.log('userIndex : ',userIndex);
+            userInsurance = insuranceDataSet[userIndex]["insurance"];
+            console.log('userInsurance : ',userInsurance);
+            if (userInsurance in result) {
+                result[userInsurance] += user["val"]
             }
-            else{
-                result[insuranceDataSet[user["p"]["가입 중인 보험"]]]=user["val"]
+            else {
+                result[userInsurance] = user["val"]
             }
         }
     }
     // 합해진 val 기준으로 key sort 하기
-    console.log(result);
+    console.log('result : ', result);
+
+    var sortable = [];
+    for (var insurance in result) {
+        sortable.push([insurance, result[insurance]]);
+    }
+
+    sortable.sort(function(a,b){
+        return b[1] - a[1];
+    });
+    console.log('sortable : ',sortable);
+    console.log('추천하는 보험 : ', sortable[0][0]);
     return result;
 }
 
 // console.log(recommendation_eng(basicDataSet, '신준수', pearson_correlation))
-
-console.log(seouFunction(similar_user(basicDataSet, '신준수', 5, pearson_correlation),insuranceDataSet));
+insuranceRecommendation(similar_user(basicDataSet, '신준수', 3, pearson_correlation), insuranceDataSet);
