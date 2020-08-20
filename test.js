@@ -17,12 +17,12 @@
 
 // 강아지/고양이 = {
 //     강아지 : 1,
-//     고양이 : 100
+//     고양이 : 10000000000
 // }
 
 // 성별 = {
 //     암 : 1,
-//     수 : 100
+//     수 : 10000
 // }
 
 // 동물 등록 여부 = {
@@ -61,13 +61,19 @@ var basicDataSet = {
     },
     '김철수': {
         '강아지/고양이' : 1,
-        '품종': 90.1,
+        '품종': 91.0,
         '나이': (getAgeFromBirthDay('2015/03/04') / 10),
         '성별': 1
     },
+    '박보검': {
+        '강아지/고양이' : 1,
+        '품종': 90.0,
+        '나이': (getAgeFromBirthDay('2017/03/04') / 10),
+        '성별': 1
+    },
     '김미영': {
-        '강아지/고양이' : 100,
-        '품종': 110.0,
+        '강아지/고양이' : 10000000000,
+        '품종': 11000000001.0,
         '나이': (getAgeFromBirthDay('2018/03/04') / 10),
         '성별': 1,
         '동물 등록 여부': 1,
@@ -77,21 +83,22 @@ var basicDataSet = {
         '강아지/고양이' : 1,
         '품종': 60.0,
         '나이': (getAgeFromBirthDay('2018/03/04') / 10),
-        '성별': 100,
+        '성별': 10000,
         '동물 등록 여부': 100,
         '중성화 여부': 1,
     },
-    '김밥': {
+    '김밥밥': {
         '강아지/고양이' : 1,
         '품종': 90.0,
         '나이': (getAgeFromBirthDay('2017/03/04') / 10),
-        '성별': 100
+        '성별': 10000
     }
 };
 
 var insuranceDataSet = {
     '신준수': {'가입 중인 보험' : '삼성화재 애니펫'},
     '김철수': {'가입 중인 보험' : 'KB손해보험 KB펫코노미'},
+    '박보검': {'가입 중인 보험' : '삼성화재 애니펫'},
     '김미영': {'가입 중인 보험' : 'DB손해보험 아이러브펫보험'},
     '홍길동': {'가입 중인 보험' : 'DB손해보험 프로미 반려동물 보험'},
     '김밥밥': {'가입 중인 보험' : '삼성화재 애니펫'},
@@ -190,6 +197,7 @@ var similar_user = function (dataset, person, num_user, distance) {
     scores.sort(function (a, b) {
         return b.val < a.val ? -1 : b.val > a.val ? 1 : b.val >= a.val ? 0 : NaN;
     });
+
     var score = [];
     for (var i = 0; i < num_user; i++) {
         score.push(scores[i]);
@@ -197,7 +205,7 @@ var similar_user = function (dataset, person, num_user, distance) {
     return score;
 }
 
-console.log('유사한 사용자 : ', similar_user(basicDataSet, '신준수', 3, pearson_correlation));
+console.log('유사한 사용자 : ', similar_user(basicDataSet, '신준수', 5, pearson_correlation));
 
 var recommendation_eng = function (dataset, person, distance) {
 
@@ -222,10 +230,10 @@ var recommendation_eng = function (dataset, person, distance) {
     for (var other in dataset) {
         if (other === person) continue;
         var similar = distance(dataset, person, other);
-
         if (similar <= 0) continue;
         for (var item in dataset[other]) {
-            if (!(item in dataset[person]) || (dataset[person][item] == 0)) {
+            // if (!(item in dataset[person]) || (dataset[person][item] == 0)) {
+            if (item in dataset[person]) {
                 //the setter help to make this look nice.
                 totals.setDefault(item, dataset[other][item] * similar);
                 simsum.setDefault(item, similar);
@@ -253,5 +261,28 @@ var recommendation_eng = function (dataset, person, distance) {
     return [rank_lst, recommend];
     // return recommend;
 }
+var seouFunction = function(similar_user_result, insuranceDataSet){
+    result = {};
+    for(var index in similar_user_result){
+        user = similar_user_result[index];
+        console.log(Object.keys(insuranceDataSet));
+        console.log(user["p"]);
+        console.log(user["p"] in Object.keys(insuranceDataSet));
+        if(user["p"] in Object.keys(insuranceDataSet)){
+            console.log("!!");
+            if(insuranceDataSet[user["p"]["가입 중인 보험"]] in Object.keys(result)){
+                result[insuranceDataSet[user["p"]["가입 중인 보험"]]]+=user["val"]
+            }
+            else{
+                result[insuranceDataSet[user["p"]["가입 중인 보험"]]]=user["val"]
+            }
+        }
+    }
+    // 합해진 val 기준으로 key sort 하기
+    console.log(result);
+    return result;
+}
 
-console.log(recommendation_eng(basicDataSet, '신준수', pearson_correlation))
+// console.log(recommendation_eng(basicDataSet, '신준수', pearson_correlation))
+
+console.log(seouFunction(similar_user(basicDataSet, '신준수', 5, pearson_correlation),insuranceDataSet));
