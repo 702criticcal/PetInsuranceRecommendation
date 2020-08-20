@@ -144,8 +144,6 @@ var len = function (obj) {
     return len;
 }
 
-console.log('유클리드 거리 : ', euclidean_score(basicDataSet, "신준수", "김철수"));
-
 var pearson_correlation = function (dataset, p1, p2) {
     var existp1p2 = {};
     for (item in dataset[p1]) {
@@ -183,8 +181,6 @@ var pearson_correlation = function (dataset, p1, p2) {
 
 }
 
-console.log('피어슨 상관 관계 점수 : ', pearson_correlation(basicDataSet, '신준수', '김철수'))
-
 var similar_user = function (dataset, person, num_user, distance) {
     var scores = [];
     for (var others in dataset) {
@@ -205,92 +201,24 @@ var similar_user = function (dataset, person, num_user, distance) {
     return score;
 }
 
-console.log('유사한 사용자 : ', similar_user(basicDataSet, '신준수', 5, pearson_correlation));
-
-var recommendation_eng = function (dataset, person, distance) {
-
-    var totals = {
-        setDefault: function (props, value) {
-            if (!this[props]) {
-                this[props] = 0;
-            }
-            this[props] += value;
-        }
-    },
-        simsum = {
-            setDefault: function (props, value) {
-                if (!this[props]) {
-                    this[props] = 0;
-                }
-
-                this[props] += value;
-            }
-        },
-        rank_lst = [];
-    for (var other in dataset) {
-        if (other === person) continue;
-        var similar = distance(dataset, person, other);
-        if (similar <= 0) continue;
-        for (var item in dataset[other]) {
-            // if (!(item in dataset[person]) || (dataset[person][item] == 0)) {
-            if (item in dataset[person]) {
-                //the setter help to make this look nice.
-                totals.setDefault(item, dataset[other][item] * similar);
-                simsum.setDefault(item, similar);
-            }
-        }
-    }
-
-    for (var item in totals) {
-        //this what the setter function does
-        //so we have to find a way to avoid the function in the object     
-        if (typeof totals[item] != "function") {
-
-            var val = totals[item] / simsum[item];
-            rank_lst.push({ val: val, items: item });
-        }
-    }
-    rank_lst.sort(function (a, b) {
-        return b.val < a.val ? -1 : b.val > a.val ?
-            1 : b.val >= a.val ? 0 : NaN;
-    });
-    var recommend = [];
-    for (var i in rank_lst) {
-        recommend.push(rank_lst[i].items);
-    }
-    return [rank_lst, recommend];
-    // return recommend;
-}
-
 var insuranceRecommendation = function (similar_user_result, insuranceDataSet) {
     result = {};
     for (var index in similar_user_result) {
         user = similar_user_result[index];
-        console.log(Object.keys(insuranceDataSet)); // [ '신준수', '김철수', '박보검', '김미영', '홍길동', '김밥밥' ]
-        console.log(insuranceDataSet);
-        console.log(user["p"]); // 박보검
         userInsurance = insuranceDataSet[user["p"]];
-        console.log('가입 중인 보험 : ', userInsurance["insurance"]);
-        // console.log(user["p"] in Object.keys(insuranceDataSet));
-        // console.log('asdasdasd', user["p"] in insuranceDataSet);
-        // console.log(insuranceDataSet[user["p"]["가입 중인 보험"]] in Object.keys(result));
-        // console.log('가입 중인 보험 : ',insuranceDataSet["가입 중인 보험"]);
         var userIndex = user["p"];
         if (userIndex in insuranceDataSet) {
-            console.log('userIndex : ',userIndex);
             userInsurance = insuranceDataSet[userIndex]["insurance"];
-            console.log('userInsurance : ',userInsurance);
-            if (userInsurance in result) {
-                result[userInsurance] += user["val"]
-            }
-            else {
-                result[userInsurance] = user["val"]
+            if (user["val"] > 0.5) {
+                if (userInsurance in result) {
+                    result[userInsurance] += user["val"]
+                }
+                else {
+                    result[userInsurance] = user["val"]
+                }
             }
         }
     }
-    // 합해진 val 기준으로 key sort 하기
-    console.log('result : ', result);
-
     var sortable = [];
     for (var insurance in result) {
         sortable.push([insurance, result[insurance]]);
@@ -299,10 +227,7 @@ var insuranceRecommendation = function (similar_user_result, insuranceDataSet) {
     sortable.sort(function(a,b){
         return b[1] - a[1];
     });
-    console.log('sortable : ',sortable);
-    console.log('추천하는 보험 : ', sortable[0][0]);
-    return result;
+    return sortable[0][0];
 }
 
-// console.log(recommendation_eng(basicDataSet, '신준수', pearson_correlation))
-insuranceRecommendation(similar_user(basicDataSet, '신준수', 3, pearson_correlation), insuranceDataSet);
+console.log('추천하는 보험 : ', insuranceRecommendation(similar_user(basicDataSet, '신준수', 5, pearson_correlation), insuranceDataSet));
