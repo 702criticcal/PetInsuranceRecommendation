@@ -99,7 +99,7 @@ var similar_user = function (dataset, person, num_user, distance) {
 }
 
 var insuranceRecommendation = function (similar_user_result, insuranceDataSet) {
-    result = {};
+    var valResult = {};
     for (var index in similar_user_result) {
         user = similar_user_result[index];
         userInsurance = insuranceDataSet[user["p"]];
@@ -107,25 +107,54 @@ var insuranceRecommendation = function (similar_user_result, insuranceDataSet) {
         if (userIndex in insuranceDataSet) {
             userInsurance = insuranceDataSet[userIndex]["insurance"];
             if (user["val"] > 0.5) {
-                if (userInsurance in result) {
-                    result[userInsurance] += user["val"]
+                if (userInsurance in valResult) {
+                    valResult[userInsurance] += user["val"]
                 }
                 else {
-                    result[userInsurance] = user["val"]
+                    valResult[userInsurance] = user["val"]
                 }
             }
         }
     }
-    var sortable = [];
-    for (var insurance in result) {
-        sortable.push([insurance, result[insurance]]);
+
+    numResult = {};
+    for (var index in similar_user_result) {
+        user = similar_user_result[index];
+        userInsurance = insuranceDataSet[user["p"]];
+        var userIndex = user["p"];
+        if (userIndex in insuranceDataSet) {
+            userInsurance = insuranceDataSet[userIndex]["insurance"];
+            if (user["val"] > 0.5) {
+                if (userInsurance in numResult) {
+                    numResult[userInsurance] += 1
+                }
+                else {
+                    numResult[userInsurance] = 1
+                }
+            }
+        }
     }
-    sortable.sort(function (a, b) {
+
+    var valSortable = [];
+    for (var insurance in valResult) {
+        valSortable.push([insurance, valResult[insurance]]);
+    }
+    valSortable.sort(function (a, b) {
         return b[1] - a[1];
     });
 
-    firstRecommendation = sortable[0][0];
-    secondRecommendation = sortable[1][0];
+    var numSortable = [];
+    for (var insurance in valResult) {
+        if (insurance in numResult) {
+            numSortable.push([insurance, numResult[insurance]]);
+        }
+    }
+    numSortable.sort(function (a, b) {
+        return b[1] - a[1];
+    });
+
+    firstRecommendation = numSortable[0];
+    secondRecommendation = numSortable[1];
     return [firstRecommendation, secondRecommendation];
 }
 
